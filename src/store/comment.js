@@ -35,16 +35,16 @@ export default {
 			if (state.comments[commentObj.cardId] === undefined) {
 				Vue.set(state.comments, commentObj.cardId, commentObj.comments)
 			} else {
-				// FIXME append comments once incremental fetching is implemented
-				// state.comments[commentObj.cardId].push(...commentObj.comments)
-				Vue.set(state.comments, commentObj.cardId, commentObj.comments)
+				state.comments[commentObj.cardId].push(...commentObj.comments)
 			}
 		},
 		createComment(state, newComment) {
 			if (state.comments[newComment.cardId] === undefined) {
 				state.comments[newComment.cardId] = []
+				Vue.set(state.comments, newComment.cardId, newComment)
+			} else {
+				state.comments[newComment.cardId].push(newComment)
 			}
-			Vue.set(state.comments, newComment.cardId, newComment)
 		},
 		updateComment(state, comment) {
 			let existingIndex = state.comments[comment.cardId].findIndex(_comment => _comment.id === comment.commentId)
@@ -60,7 +60,15 @@ export default {
 		}
 	},
 	actions: {
-		listComments({ commit }, card) {
+		listComments({ commit, state }, card) {
+			card.limit = 5
+			card.offset = 0
+			if (state.comments[card.id] !== undefined) {
+				if (state.comments[card.id].length === card.limit) {
+					card.offset = card.limit
+				}
+			}
+
 			apiClient.listComments(card)
 				.then((comments) => {
 					const commentsJson = xmlToTagList(comments)

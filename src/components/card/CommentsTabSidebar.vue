@@ -8,8 +8,7 @@
 		</div>
 
 		<form id="commentForm" @submit.prevent="createComment()">
-			<editor-content :editor="editor" :placeholder="t('deck', 'New comment') + ' ...'" class="editor__content"
-				required />
+			<editor-content :editor="editor" class="editor__content" />
 			<input v-tooltip="t('deck', 'Save')" class="icon-confirm" type="submit"
 				value="">
 		</form>
@@ -79,15 +78,14 @@ export default {
 		return {
 			newComment: '',
 			isLoading: false,
-			limit: 20,
-			offset: 0,
+			required: false,
 
 			editor: new Editor({
 				extensions: [
 					new Placeholder({
 						emptyNodeClass: 'is-empty',
 						emptyNodeText: t('deck', 'New comment') + ' ...',
-						showOnlyWhenEditable: false
+						showOnlyWhenEditable: true
 					}),
 					new Mention({
 						// a list of all suggested items
@@ -163,6 +161,9 @@ export default {
 				],
 				content: '',
 				onUpdate: ({ getHTML }) => {
+					if (getHTML().length > 0) {
+						this.required = true
+					}
 					this.newComment = getHTML().replace(/(<([^>]+)>)/ig, '')
 				}
 			}),
@@ -203,23 +204,22 @@ export default {
 	methods: {
 		loadComments() {
 			this.isLoading = true
-			this.card.limit = this.limit
-			this.card.offset = this.offset
 			this.$store.dispatch('listComments', this.card).then(response => {
 				this.isLoading = false
 			})
 		},
 		createComment() {
-			let commentObj = {
-				cardId: this.card.id,
-				comment: this.newComment
+			if (this.required) {
+				let commentObj = {
+					cardId: this.card.id,
+					comment: this.newComment
+				}
+				this.$store.dispatch('createComment', commentObj)
+				this.loadComments()
+				this.editor.clearContent()
 			}
-			this.$store.dispatch('createComment', commentObj)
-			this.loadComments()
-			this.editor.clearContent()
 		},
 		loadMore() {
-			this.offset = this.offset + this.limit
 			this.loadComments()
 		},
 
@@ -303,6 +303,7 @@ export default {
 	}
 
 	#commentForm {
+		display: flex;
 		margin-left: 36px;
 		position: relative;
 		margin-bottom: 15px;

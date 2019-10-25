@@ -86,9 +86,6 @@ export default {
 			text-align: right;
 			opacity: .5;
 		}
-		.action {
-			opacity: .3;
-		}
 
 	}
 
