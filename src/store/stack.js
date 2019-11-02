@@ -35,6 +35,9 @@ export default {
 	getters: {
 		stacksByBoard: state => (id) => {
 			return state.stacks.filter((stack) => stack.boardId === id).sort((a, b) => a.order - b.order)
+		},
+		allStacks(state) {
+			return state.stacks
 		}
 	},
 	mutations: {

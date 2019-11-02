@@ -38,6 +38,12 @@ export const BOARD_FILTERS = {
 	SHARED: 'shared'
 }
 
+export const COLLECTION_FILTERS = {
+	ALL: 'all',
+	DUE: 'due',
+	MY: 'my'
+}
+
 export default new Vuex.Store({
 	modules: {
 		stack,
@@ -55,6 +61,7 @@ export default new Vuex.Store({
 		sharees: [],
 		assignableUsers: [],
 		boardFilter: BOARD_FILTERS.ALL,
+		collectionFilter: COLLECTION_FILTERS.ALL,
 		activity: [],
 		activityLoadMore: true
 	},
@@ -175,6 +182,9 @@ export default new Vuex.Store({
 		},
 		setBoardFilter(state, filter) {
 			state.boardFilter = filter
+		},
+		setCollectionFilter(state, filter) {
+			state.collectionFilter = filter
 		},
 		setCurrentBoard(state, board) {
 			state.currentBoard = board
@@ -342,6 +352,9 @@ export default new Vuex.Store({
 
 		setBoardFilter({ commmit }, filter) {
 			commmit('setBoardFilter', filter)
+		},
+		setCollectionFilter({ commmit }, filter) {
+			commmit('setCollectionFilter', filter)
 		},
 		toggleNav({ commit }) {
 			commit('toggleNav')
